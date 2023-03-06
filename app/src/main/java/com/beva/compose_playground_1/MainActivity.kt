@@ -3,11 +3,9 @@ package com.beva.compose_playground_1
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.draggable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -19,7 +17,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.beva.compose_playground_1.ui.theme.Compose_Playground_1Theme
 import androidx.compose.ui.res.painterResource
@@ -39,6 +36,7 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun CardBox() {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -46,26 +44,23 @@ fun CardBox() {
         shape = RoundedCornerShape(12.dp),
         elevation = 8.dp
     ) {
-        Box(
+        DraggableScreen(
             modifier = Modifier
                 .fillMaxHeight(0.36f)
-                .padding(8.dp),
-            contentAlignment = Alignment.Center
+                .padding(8.dp)
         ) {
-            Column(
-            ) {
-                StarBox()
-            }
+            StarBox()
         }
     }
 }
 
 @Composable
-fun StarBox(
-) {
+fun StarBox() {
+
     var displayDefault by remember { mutableStateOf(false) }
     var degree by remember { mutableStateOf(0f) }
     var originColor by remember { mutableStateOf(Color(0xFFfbbf2f)) }
+    var originImage by remember { mutableStateOf(R.drawable.icon_star_line) }
 
     Column(
         Modifier.fillMaxSize(),
@@ -73,21 +68,23 @@ fun StarBox(
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         //the svg image can load by adding new vector within local file
-        Icon(
-            painter = painterResource(
-                id = if (displayDefault) R.drawable.icon_star_filled else R.drawable.icon_star_line
-            ),
-            tint = originColor,
-            contentDescription = "Empty Star",
-            modifier = Modifier
-                .size(80.dp)
-                .align(Alignment.CenterHorizontally)
-                .clickable {
-                    displayDefault = !displayDefault
-                }.graphicsLayer {
-                    rotationZ = degree
-                },
-        )
+        DragTarget(modifier = Modifier, dataToDrop = Start()) {
+
+            Icon(
+                painter = painterResource(id = originImage),
+                tint = originColor,
+                contentDescription = "Empty Star",
+                modifier = Modifier
+                    .size(80.dp)
+                    .clickable {
+                        originImage = R.drawable.icon_star_filled
+                    }
+                    .graphicsLayer {
+                        rotationZ = degree
+                    }
+            )
+        }
+
 
         Row(
             modifier = Modifier
@@ -105,22 +102,21 @@ fun StarBox(
                         }
                         .clickable {
                             println("left Clicked")
-                            degree += -3f
+                            degree += -12f
                         },
                 )
             }
             Spacer(modifier = Modifier.width(12.dp))
             Text(
-                text = if (displayDefault) "Default" else "",
+                text = if (degree != 0f || originColor != Color(0xFFfbbf2f) || originImage != R.drawable.icon_star_line) "Default" else "",
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
                 modifier = Modifier.clickable {
                     degree = 0f
-                    originColor = Color.Yellow
-                    if (degree == 0f) {
-                        displayDefault = !displayDefault
-                    }
-                },
+                    originColor = Color(0xFFfbbf2f)
+                    originImage = R.drawable.icon_star_line
+                    displayDefault = !displayDefault
+                }
 
                 )
             Spacer(modifier = Modifier.width(12.dp))
@@ -132,7 +128,7 @@ fun StarBox(
                     contentDescription = "turn right",
                     modifier = Modifier.clickable {
                         println("right Clicked")
-                        degree += 3f
+                        degree += 12f
                     }
                 )
             }
@@ -175,3 +171,9 @@ fun StarBox(
         }
     }
 }
+
+data class Start(
+    var image: Int = R.drawable.icon_star_line,
+    var tint: Color = Color(0xFFfbbf2f),
+    var degree: Float = 0f
+)
