@@ -1,6 +1,7 @@
 package com.beva.compose_playground_1
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
@@ -138,7 +139,12 @@ fun StarBox() {
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
-            Box(
+
+//            val boxes = remember {
+//                mutableStateMapOf<Int, ColorBox>()
+//            }
+
+            DropItem<ColorBox>(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -147,8 +153,16 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Blue
                     }
-            )
-            Box(
+            ) { isInBound: Boolean ->
+//                if(data != null){
+//                    LaunchedEffect(key1 = data) {}
+//                }
+                if (isInBound) {
+                    originColor = Color.Blue
+                }
+                Log.d("isInBound","$isInBound")
+            }
+            DropItem<ColorBox>(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -157,8 +171,12 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Green
                     }
-            )
-            Box(
+            ) {
+                if (it) {
+                    originColor = Color.Green
+                }
+            }
+            DropItem<ColorBox>(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -167,7 +185,11 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Red
                     }
-            )
+            ) {
+                if (it) {
+                    originColor = Color.Red
+                }
+            }
         }
     }
 }
@@ -176,4 +198,8 @@ data class Start(
     var image: Int = R.drawable.icon_star_line,
     var tint: Color = Color(0xFFfbbf2f),
     var degree: Float = 0f
+)
+
+data class ColorBox(
+    var color: Color
 )

@@ -39,8 +39,8 @@ fun DraggableScreen(
                         scaleX = 1f
                         scaleY = 1f
 //                        alpha = if (targetSize == IntSize.Zero) 0f else .9f
-                        translationX = offset.x.minus(targetSize.width / 2)
-                        translationY = offset.y.minus(targetSize.height / 2)
+                        translationX = offset.x.minus(targetSize.width)
+                        translationY = offset.y.minus(targetSize.height)
                     }
                     .onGloballyPositioned {
                         targetSize = it.size
@@ -71,24 +71,26 @@ fun <T> DragTarget(
             )
         }
         .pointerInput(Unit) {
-            detectDragGesturesAfterLongPress(onDragStart = {
+            //onTouchEvent
+            detectDragGesturesAfterLongPress(
+                onDragStart = {
 //                viewModel.startDragging()
-                currentState.dataToDrop = dataToDrop
-                currentState.isDragging = true
-                currentState.dragPosition = currentPosition + it
-                currentState.draggableComposable = content
-            }, onDrag = { change, dragAmount ->
-                change.consumeAllChanges()
-                currentState.dragOffset += Offset(dragAmount.x, dragAmount.y)
-            }, onDragEnd = {
+                    currentState.dataToDrop = dataToDrop
+                    currentState.isDragging = true
+                    currentState.dragPosition = currentPosition + it
+                    currentState.draggableComposable = content
+                }, onDrag = { change, dragAmount ->
+                    change.consumeAllChanges()
+                    currentState.dragOffset += Offset(dragAmount.x, dragAmount.y)
+                }, onDragEnd = {
 //                viewModel.stopDragging()
-                currentState.isDragging = false
-                currentState.dragOffset = Offset.Zero
-            }, onDragCancel = {
+                    currentState.isDragging = false
+                    currentState.dragOffset = Offset.Zero
+                }, onDragCancel = {
 //                viewModel.stopDragging()
-                currentState.dragOffset = Offset.Zero
-                currentState.isDragging = false
-            })
+                    currentState.dragOffset = Offset.Zero
+                    currentState.isDragging = false
+                })
         }) {
         content()
     }
@@ -97,7 +99,7 @@ fun <T> DragTarget(
 @Composable
 fun <T> DropItem(
     modifier: Modifier,
-    content: @Composable() (BoxScope.(isInBound: Boolean, data: T?) -> Unit)
+    content: @Composable() (BoxScope.(isInBound: Boolean) -> Unit)
 ) {
 
     val dragInfo = LocalDragTargetInfo.current
@@ -112,9 +114,9 @@ fun <T> DropItem(
             isCurrentDropTarget = rect.contains(dragPosition + dragOffset)
         }
     }) {
-        val data =
-            if (isCurrentDropTarget && !dragInfo.isDragging) dragInfo.dataToDrop as T? else null
-        content(isCurrentDropTarget, data)
+//        val data =
+//            if (isCurrentDropTarget && !dragInfo.isDragging) dragInfo.dataToDrop as T else null
+        content(isCurrentDropTarget)
     }
 }
 
