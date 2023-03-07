@@ -38,7 +38,6 @@ fun DraggableScreen(
                         val offset = (state.dragPosition + state.dragOffset)
                         scaleX = 1f
                         scaleY = 1f
-//                        alpha = if (targetSize == IntSize.Zero) 0f else .9f
                         translationX = offset.x.minus(targetSize.width)
                         translationY = offset.y.minus(targetSize.height)
                     }
@@ -74,7 +73,6 @@ fun <T> DragTarget(
             //onTouchEvent
             detectDragGesturesAfterLongPress(
                 onDragStart = {
-//                viewModel.startDragging()
                     currentState.dataToDrop = dataToDrop
                     currentState.isDragging = true
                     currentState.dragPosition = currentPosition + it
@@ -83,11 +81,9 @@ fun <T> DragTarget(
                     change.consumeAllChanges()
                     currentState.dragOffset += Offset(dragAmount.x, dragAmount.y)
                 }, onDragEnd = {
-//                viewModel.stopDragging()
                     currentState.isDragging = false
                     currentState.dragOffset = Offset.Zero
                 }, onDragCancel = {
-//                viewModel.stopDragging()
                     currentState.dragOffset = Offset.Zero
                     currentState.isDragging = false
                 })
@@ -114,8 +110,6 @@ fun <T> DropItem(
             isCurrentDropTarget = rect.contains(dragPosition + dragOffset)
         }
     }) {
-//        val data =
-//            if (isCurrentDropTarget && !dragInfo.isDragging) dragInfo.dataToDrop as T else null
         content(isCurrentDropTarget)
     }
 }

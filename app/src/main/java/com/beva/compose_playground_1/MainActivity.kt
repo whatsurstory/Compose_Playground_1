@@ -4,6 +4,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,17 +16,16 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
-import androidx.compose.runtime.Composable
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.unit.dp
-import com.beva.compose_playground_1.ui.theme.Compose_Playground_1Theme
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.beva.compose_playground_1.ui.theme.Compose_Playground_1Theme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,9 +62,19 @@ fun CardBox() {
 fun StarBox() {
 
     var displayDefault by remember { mutableStateOf(false) }
+    var displayRotation by remember { mutableStateOf(false) }
     var degree by remember { mutableStateOf(0f) }
     var originColor by remember { mutableStateOf(Color(0xFFfbbf2f)) }
     var originImage by remember { mutableStateOf(R.drawable.icon_star_line) }
+
+    val infiniteTransition = rememberInfiniteTransition()
+    var mode by remember { mutableStateOf(false) }
+
+    val rotation = animateFloatAsState(
+        targetValue = degree,
+        animationSpec = tween(100, easing = FastOutSlowInEasing)
+
+    )
 
     Column(
         Modifier.fillMaxSize(),
@@ -81,7 +94,9 @@ fun StarBox() {
                         originImage = R.drawable.icon_star_filled
                     }
                     .graphicsLayer {
-                        rotationZ = degree
+                        rotationZ = if (displayDefault) rotation.value else degree
+                        Log.d("degree: rotation", "${rotation.value}")
+                        Log.d("degree: origin", "$degree")
                     }
             )
         }
@@ -119,7 +134,7 @@ fun StarBox() {
                     displayDefault = !displayDefault
                 }
 
-                )
+            )
             Spacer(modifier = Modifier.width(12.dp))
             Box(modifier = Modifier) {
                 Icon(
@@ -140,10 +155,6 @@ fun StarBox() {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
 
-//            val boxes = remember {
-//                mutableStateMapOf<Int, ColorBox>()
-//            }
-
             DropItem<ColorBox>(
                 modifier = Modifier
                     .size(80.dp)
@@ -154,13 +165,10 @@ fun StarBox() {
                         originColor = Color.Blue
                     }
             ) { isInBound: Boolean ->
-//                if(data != null){
-//                    LaunchedEffect(key1 = data) {}
-//                }
                 if (isInBound) {
                     originColor = Color.Blue
                 }
-                Log.d("isInBound","$isInBound")
+//                Log.d("isInBound","$isInBound")
             }
             DropItem<ColorBox>(
                 modifier = Modifier
