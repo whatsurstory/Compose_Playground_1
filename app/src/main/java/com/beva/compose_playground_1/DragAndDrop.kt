@@ -121,3 +121,4 @@ internal class DragTargetInfo {
     var draggableComposable by mutableStateOf<(@Composable () -> Unit)?>(null)
     var dataToDrop by mutableStateOf<Any?>(null)
 }
+
