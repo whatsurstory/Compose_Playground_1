@@ -1,5 +1,6 @@
 package com.beva.compose_playground_1
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -19,8 +20,7 @@ fun CardBox() {
         shape = RoundedCornerShape(12.dp),
         elevation = 8.dp
     ) {
-        DraggableScreen(
-            modifier = Modifier
+        Box(modifier = Modifier
                 .fillMaxHeight(0.36f)
                 .padding(8.dp)
         ) {

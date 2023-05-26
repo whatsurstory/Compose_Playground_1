@@ -5,20 +5,28 @@ import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.onPlaced
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.beva.compose_playground_1.ui.theme.StarColor
-import kotlinx.coroutines.flow.collectLatest
+import kotlin.math.roundToInt
 
 
 const val TAG = "Beva"
@@ -41,7 +49,38 @@ fun StarBox() {
         verticalArrangement = Arrangement.SpaceEvenly
     ) {
         //the svg image can load by adding new vector within local file
-        DragTarget(modifier = Modifier, dataToDrop = Star()) {
+        var offsetX by remember {
+            mutableStateOf(0f)
+        }
+
+        var offsetY by remember {
+            mutableStateOf(0f)
+        }
+
+        val originPosition = remember {
+            mutableStateOf(Offset.Zero)
+        }
+
+
+        Box(
+            modifier = Modifier
+                .offset { IntOffset(offsetX.roundToInt(), offsetY.roundToInt()) }
+                .pointerInput(Unit) {
+                    detectDragGestures(
+                        onDrag = { change, dragAmount ->
+                            change.consume()
+                            offsetX += dragAmount.x
+                            Log.d(TAG, "StarBox: x: $offsetX")
+                            offsetY += dragAmount.y
+                            Log.d(TAG, "StarBox: y: $offsetY")
+                            if (offsetX != 0f || offsetY != 0f) originColor = Color.Black
+                        },
+                        onDragEnd = {
+                            offsetX = Offset.Zero.x
+                            offsetY = Offset.Zero.y
+                        })
+                }
+        ) {
 
             Icon(
                 painter = painterResource(id = originImage),
@@ -110,7 +149,7 @@ fun StarBox() {
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
 
-            DropItem<ColorBox>(
+            Box(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -119,12 +158,9 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Blue
                     }
-            ) { isInBound: Boolean ->
-                if (isInBound) {
-                    originColor = Color.Blue
-                }
-            }
-            DropItem<ColorBox>(
+
+            )
+            Box(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -133,12 +169,13 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Green
                     }
-            ) { isInBound: Boolean ->
-                if (isInBound) {
-                    originColor = Color.Green
-                }
-            }
-            DropItem<ColorBox>(
+            )
+//            { isInBound: Boolean ->
+//                if (isInBound) {
+//                    originColor = Color.Green
+//                }
+//            }
+            Box(
                 modifier = Modifier
                     .size(80.dp)
                     .border(2.dp, Color.Black)
@@ -147,11 +184,12 @@ fun StarBox() {
                     .clickable {
                         originColor = Color.Red
                     }
-            ) { isInBound: Boolean ->
-                if (isInBound) {
-                    originColor = Color.Red
-                }
-            }
+            )
+//            { isInBound: Boolean ->
+//                if (isInBound) {
+//                    originColor = Color.Red
+//                }
+//            }
         }
     }
 }

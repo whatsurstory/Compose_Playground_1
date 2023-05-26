@@ -56,7 +56,6 @@ fun DraggableScreen(
 fun <T> DragTarget(
     modifier: Modifier = Modifier,
     dataToDrop: T,
-//    viewModel: MainViewModel,
     content: @Composable (() -> Unit)
 ) {
 
